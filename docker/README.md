@@ -1,4 +1,6 @@
-# Docker Proxy
+# ပြန်လည်းပြင်ဆင်ထာသောအပိုင်တွေးဖြစ်တယ်အမှာကင်းပြီးသုံးရတာလွယ်ကူးစေရန် အကောင်းဆုံးဖြစ်အောင်းပြုပြင်ပေးထာသည်း
+
+Docker Proxy
 
 Run sni-spoof-rs as shared HTTP/HTTPS and SOCKS5 proxies. One machine runs the container, all devices on the network connect through it.
 
@@ -134,6 +136,9 @@ Settings > WiFi > روی شبکه بزنید > Configure Proxy > Manual
 
 ```bash
 curl -x http://127.0.0.1:1080 https://icanhazip.com
+
+
+
 ```
 
 باید آی‌پی سرور ریموت شما را نشان دهد، نه آی‌پی واقعی شما.
