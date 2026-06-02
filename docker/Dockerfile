@@ -1,8 +1,10 @@
 FROM rust:bookworm AS builder
 WORKDIR /build
-COPY Cargo.toml Cargo.lock ./
-COPY src/ src/
-COPY data/ data/
+
+# လမ်းကြောင်းများကို ဖိုဒါအပြင်ဘက် (.. / Root) ကနေ ဆွဲယူရန် ပြင်ဆင်ထားပါသည်
+COPY ../Cargo.toml ../Cargo.lock ./
+COPY ../src/ ./src/
+COPY ../data/ ./data/
 RUN cargo build --release
 
 FROM debian:bookworm-slim
@@ -27,7 +29,8 @@ RUN setcap cap_net_raw=+ep /usr/local/bin/sni-spoof-rs
 
 RUN mkdir -p /etc/sni-spoof-rs /etc/xray
 
-COPY docker/entrypoint.sh /entrypoint.sh
+# Dockerfile ရှိနေတဲ့ ဖိုဒါထဲက entrypoint.sh ကို တိုက်ရိုက်ယူရန် ပြင်ဆင်ထားပါသည်
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENV FAKE_SNI=security.vercel.com
