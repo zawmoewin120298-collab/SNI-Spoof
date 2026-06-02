@@ -1,7 +1,6 @@
 FROM rust:bookworm AS builder
 WORKDIR /build
 
-# လမ်းကြောင်းများကို ဖိုဒါအပြင်ဘက် (.. / Root) ကနေ ဆွဲယူရန် ပြင်ဆင်ထားပါသည်
 COPY ../Cargo.toml ../Cargo.lock ./
 COPY ../src/ ./src/
 COPY ../data/ ./data/
@@ -9,8 +8,12 @@ RUN cargo build --release
 
 FROM debian:bookworm-slim
 
-# ပြုပြင်ချက် (၁) - ရောဂါအမြစ်ပြတ်ဖို့ libcap-bin ကိုပါ တစ်ခါတည်း Install လုပ်မယ်
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# ပြုပြင်ချက် - Railway Network Timeout မဖြစ်စေရန် Cloudflare Mirror သို့ ပြောင်းလဲပြီး Retry (၃) ကြိမ် အတင်းဆွဲခိုင်းမည်
+RUN sed -i 's/deb.debian.org/mirrors.cloudflare.com/g' /etc/apt/sources.list.d/debian.sources || \
+    sed -i 's/deb.debian.org/mirrors.cloudflare.com/g' /etc/apt/sources.list
+
+RUN apt-get -o Acquire::ForceIPv4=true -o Acquire::Retries=3 update && \
+    apt-get -o Acquire::ForceIPv4=true -o Acquire::Retries=3 install -y --no-install-recommends \
     ca-certificates curl unzip dnsutils python3 libcap-bin && \
     rm -rf /var/lib/apt/lists/*
 
@@ -24,12 +27,10 @@ RUN ARCH=$(dpkg --print-architecture) && \
 
 COPY --from=builder /build/target/release/sni-spoof-rs /usr/local/bin/sni-spoof-rs
 
-# ပြုပြင်ချက် (၂) - Root မဟုတ်တဲ့ Container ထဲမှာ Raw Socket ဖွင့်ခွင့် (CAP_NET_RAW) အာဏာကို binary ဆီ အသေအပ်နှင်းမယ်
 RUN setcap cap_net_raw=+ep /usr/local/bin/sni-spoof-rs
 
 RUN mkdir -p /etc/sni-spoof-rs /etc/xray
 
-# Dockerfile ရှိနေတဲ့ ဖိုဒါထဲက entrypoint.sh ကို တိုက်ရိုက်ယူရန် ပြင်ဆင်ထားပါသည်
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
@@ -40,3 +41,4 @@ ENV SOCKS_PORT=1081
 EXPOSE 1080 1081
 
 ENTRYPOINT ["/entrypoint.sh"]
+
