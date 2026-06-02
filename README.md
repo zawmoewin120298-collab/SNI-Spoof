@@ -13,7 +13,8 @@ sni-spoof-rs is a local TCP forwarder and desktop helper for Cloudflare-fronted 
 **[English Guide](#english-guide)** | **[راهنمای فارسی](#راهنمای-فارسی)**
 
 ## English Guide
-
+## Myanmar 
+sin တွေးကိုကြော်ခွကြမယ်
 ### What You Get
 
 - Native CLI proxy for Linux, macOS, and Windows.
