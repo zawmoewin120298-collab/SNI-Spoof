@@ -94,12 +94,15 @@ if echo "$SERVER_HOST" | grep -qE '^(127\.|localhost|0\.0\.0\.0)'; then
     CONNECT_PORT=443
 fi
 
-# ပြုပြင်ချက်အဓိကပိုင်း - sni-spoof-rs အကြိုက် Format အမှန်သို့ ပြောင်းလဲတည်ဆောက်ခြင်း
 cat > /etc/sni-spoof-rs/config.json << SNIEOF
 {
-  "listen": "0.0.0.0:${LISTEN_PORT}",
-  "connect": "${CONNECT_IP}:${CONNECT_PORT}",
-  "fake_sni": "${FAKE_SNI}"
+  "listeners": [
+    {
+      "listen": "0.0.0.0:${LISTEN_PORT}",
+      "connect": "${CONNECT_IP}:${CONNECT_PORT}",
+      "fake_sni": "${FAKE_SNI}"
+    }
+  ]
 }
 SNIEOF
 
@@ -257,3 +260,4 @@ echo "============================================"
 echo ""
 
 exec xray run -config /etc/xray/config.json
+
